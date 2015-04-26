@@ -55,17 +55,18 @@ void Game::initGame(char **p)
 void Game::startGame()
 {
 	initNewDeal();
-	while (state.total_score[0] < 1 && state.total_score[1] < 1)
+	while (state.total_score[TEAM1] < SCORE_LIMIT && state.total_score[TEAM2] < SCORE_LIMIT)
 	{
 		if (deal())
 		{
 			// Fill State structure
-			clearRound();
+			clearTurn();
 			createNewRoundStates();
 			printBoard();
 			
 			for (int turn = 0; turn < NB_TURNS; turn++)
 			{
+				state.turn_number = turn;
 				for (int i = 0; i < NB_PLAYERS; i++)
 				{
 					int player = (state.first_to_play + i) % NB_PLAYERS;
@@ -82,13 +83,16 @@ void Game::startGame()
 				}
 				printBoard();
 				
-				updateEndRoundStates();
+				updateEndTurnStates();
 				for (int i = 0; i < NB_PLAYERS; i++)
 					players[i]->endRound();
 				state.first_to_play = state.playerWinningFold();
-				clearRound();
+				clearTurn();
 			}
 			
+			updateEndRoundStates();
+			printRoundScore();
+			printGameScore();
 			if (cheater != INVALID_PLAYER)
 			{
 				std::wcout << "The player " << cheater << " made his team loose by doing an invalid move." << std::endl;
@@ -96,7 +100,6 @@ void Game::startGame()
 		}
 		
 		initNewDeal();
-		state.total_score[0]++;
 	}
 }
 
@@ -179,18 +182,38 @@ void Game::initNewDeal()
 	state.first_to_play = (dealer+1)%NB_PLAYERS;
 	shuffle();
 	
-	for (int i = 0; i < NB_PLAYERS; i++)
+	for (int i = 0; i < NB_PLAYERS; i++) {
 		players[i]->cleanHand();
+		hands[i].clear();
+	}
 }
 
 void Game::createNewRoundStates()
 {
+	state.clearRound();
+	
 	for (int i = 0; i < NB_PLAYERS; i++)
 		players[i]->setHand(hands[i]);
 }
 
-void Game::updateEndRoundStates()
+void Game::updateEndTurnStates()
 {
+	// Compute score
+	int turn_score = 0;
+	if (state.turn_number == LAST_TURN)	// Last trick is 10 points
+		turn_score = 10;
+	for (int i = 0; i < NB_PLAYERS; i++)
+		turn_score += state.turn[i].getScore(state.trump_suit);
+	if (state.playerWinningFold() % NB_TEAMS == TEAM1)
+		state.round_score[TEAM1] += turn_score;
+	else
+		state.round_score[TEAM2] += turn_score;
+	
+	// Save played cards
+	for (int i = 0; i < NB_PLAYERS; i++)
+		state.played[i].push_back(state.turn[i]);
+	
+	// Update cards for each players
 	for (int i = 0; i < NB_PLAYERS; i++)
 		updateTurnState(i);
 }
@@ -199,8 +222,27 @@ void Game::updateTurnState(int player)
 {
 	players[player]->state = state;
 	players[player]->setHand(hands[player]);
-	// for (int i = 0; i < NB_PLAYERS; i++)
-		// players[player]->state.turn[i] = state.turn[i];
+}
+
+void Game::updateEndRoundStates()
+{
+	int leader_team = state.leader % NB_TEAMS;
+	int opponent_team = (leader_team==TEAM1?TEAM2:TEAM1);
+	if (state.round_score[leader_team] > state.round_score[opponent_team])
+	{
+		state.total_score[TEAM1] += state.round_score[TEAM1];
+		state.total_score[TEAM2] += state.round_score[TEAM2];
+	}
+	else if (state.round_score[leader_team] == state.round_score[opponent_team])
+	{
+		// This is not what should happen, half of the points have to be repoted to the next round - to do list
+		state.total_score[TEAM1] += state.round_score[TEAM1];
+		state.total_score[TEAM2] += state.round_score[TEAM2];
+	}
+	else
+	{
+		state.total_score[opponent_team] += state.round_score[TEAM1] + state.round_score[TEAM2];
+	}
 }
 
 Player* Game::loadPlayer(std::string name)
@@ -227,8 +269,21 @@ Player* Game::loadPlayer(std::string name)
 	return getPlayer();
 }
 
+void Game::printRoundScore()
+{
+	std::wcout << "Round score - Team1: " << state.round_score[TEAM1] << " - Team2: " << state.round_score[TEAM2] << std::endl;
+}
+
+void Game::printGameScore()
+{
+	std::wcout << "Game score - Team1: " << state.total_score[TEAM1] << " - Team2: " << state.total_score[TEAM2] << std::endl;
+}
+
 void Game::printBoard()
 {
+	// Printing score first
+	printRoundScore();
+	
 	// First line
 	std::wcout << "  ";
 	int i = 0;
@@ -311,7 +366,7 @@ void Game::printBoard()
 	std::wcout << std::endl << std::endl;
 }
 
-void Game::clearRound()
+void Game::clearTurn()
 {
 	for (int i = 0; i < NB_PLAYERS; i++)
 		state.turn[i] = Card(INVALID_SUIT, INVALID_VALUE);

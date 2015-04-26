@@ -5,7 +5,7 @@
 State::State()
 {
 	total_score[0] = total_score[1] = 0;
-	reset();
+	clearRound();
 }
 
 State::State(const State &s)
@@ -41,7 +41,7 @@ State& State::operator=(const State& s)
 	return *this;
 }
 
-void State::reset()
+void State::clearRound()
 {
 	round_score[0] = round_score[1] = 0;
 	turn_number = 0;

@@ -5,7 +5,8 @@
 
 #include "card.hpp"
 
-enum {PLAYER_TEAM = 0, OPPONENT_TEAM = 1, NB_TEAMS = 2};
+enum {TEAM1 = 0, TEAM2 = 1, NB_TEAMS = 2};
+enum {PLAYER_TEAM = 0, OPPONENT_TEAM = 1};
 enum {NOBODY = -1, PLAYER1 = 0, PLAYER2 = 1, PLAYER3 = 2, PLAYER4 = 3, NB_PLAYERS = 4};
 #define NUM_PLAYERS         4
 #define BID_HAND_NB_CARDS   5
@@ -16,7 +17,7 @@ public:
 	State();
 	State(const State &s);
 	State& operator=(const State& s);
-	void reset();
+	void clearRound();
 	
 	// Useful functions
 	int playerWinningFold() const;

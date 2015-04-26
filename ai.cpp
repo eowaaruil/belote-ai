@@ -6,10 +6,10 @@
 /**
  * Rules
  * 1: An AI that play an invalid card is disqualified
- * 2: You have n(5-10?) seconds to compute your turn, after, you're disqualified (clock ticks ? another mesurement unit ?)
- * 3: No parallel computing
- * 4: 
- * 5: The use of standard I/O is forbidden
+ * 2: AIs have 10 seconds to compute their turn, after, they are disqualified
+ * 3: Single thread
+ * 4: No standard I/O
+ * 5: 
  */
 
 class PLAYER_NAME : public Player

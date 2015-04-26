@@ -8,7 +8,10 @@
 #include "card.hpp"
 #include "player.hpp"
 
+#define SCORE_LIMIT			1000
+
 #define NB_TURNS			8
+#define LAST_TURN			7
 
 #define DEAL_FIRST_TURN		3
 #define DEAL_SECOND_TURN	2
@@ -33,15 +36,20 @@ public:
 	bool deal();			// deals cards to players return false if nobody took the exposed card XXX need to finish first and second bid XXX
 	void initNewDeal();		// initialize game for a new round - do not call deal()
 	void createNewRoundStates();		// update state for new round
-	void updateEndRoundStates();		// update states for end round
+	void updateEndTurnStates();			// update states for the end of turn
 	void updateTurnState(int player);	// update state of the current turn for a player to make him play a card
+	void updateEndRoundStates();		// update score at the end of the round
 	Player* loadPlayer(std::string name);
-	void printBoard();
-	void clearRound(); // Clears the variable current_turn
+	void clearTurn(); // Clears the variable current_turn
 	bool isValidMove(int player, Card c);
 	void looseByCheating(int player);
 	bool playerHasSuit(int player, int suit);
 	bool playerHasBetterCardInSuit(int player, Card c);
+	
+	// Display functions
+	void printBoard();
+	void printRoundScore();
+	void printGameScore();
 	
 protected:
 	std::map<std::string, void*> libraries;

@@ -64,7 +64,7 @@ bool Card::operator==(Card const& c)
 int Card::getScore(int trump) const
 {
 	if (suit == trump)
-		return trump_score[value];
+		return trump_score[getTrumpValue()];
 	else
 		return suit_score[value];
 }
