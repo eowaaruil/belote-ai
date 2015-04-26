@@ -74,6 +74,7 @@ int gameIsValidMove()
 	game.setPlayers(&p1, &p2, &p3, &p4);
 	s.leader = 0;	s.trump_suit = CLUBS;	s.first_to_play = 0;
 	
+	// The player has the asked suit (not trump)
 	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[2] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
 	game.set(s, std::list<Card>{Card(CLUBS, C8)}, std::list<Card>{Card(CLUBS, C9), Card(HEARTS, C10)},
 		std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)});
@@ -84,6 +85,7 @@ int gameIsValidMove()
 		std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)});
 	ret += assertion(game.isValidMove(1, Card(HEARTS, CA)), "have asked suit, play same suit, not trump, playedcard.value > winningcard.value");
 	
+	// The player do not have the asked suit
 	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[2] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
         game.set(s, std::list<Card>{Card(CLUBS, C8)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
 		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)});
@@ -92,8 +94,69 @@ int gameIsValidMove()
 	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[2] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
         game.set(s, std::list<Card>{Card(CLUBS, C8)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
 		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)});
-        ret += assertion(game.isValidMove(1, Card(CLUBS, CA)), "have asked suit, trump, have trump, play same suit, not trump, playedcard.value > winningcard.value");
+        ret += assertion(game.isValidMove(1, Card(CLUBS, CA)), "don't have asked suit, trump, have trump, play same suit, trump with highest");
 	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[2] = Card(INVALID_SUIT, INVALID_VALUE);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(CLUBS, CA)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)});
+        ret += assertion(game.isValidMove(1, Card(CLUBS, C8)), "don't have asked suit, trump, have trump, play same suit, trump with lowest");
+	
+	// The team isn't winning the fold, the player has the asked color
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, C10);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(game.isValidMove(3, Card(HEARTS, CA)), "team not winning fold, have color, play color");
+	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, C10);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(!game.isValidMove(3, Card(CLUBS, CA)), "team not winning fold, have color, don't play color, play trump");
+	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, C10);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(!game.isValidMove(3, Card(SPADES, CA)), "team not winning fold, have color, don't play color, don't play trump");
+	
+	s.turn[0] = Card(CLUBS, CQ);s.turn[1] = Card(CLUBS, C10);s.turn[2] = Card(CLUBS, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(game.isValidMove(3, Card(CLUBS, C7)), "team not winning fold, have color, play color, play trump, no trump above");
+	
+	// The team is winning the fold, the player has the asked color
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, CJ);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(game.isValidMove(3, Card(HEARTS, CA)), "team winning fold, have color, play color");
+	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, CJ);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(!game.isValidMove(3, Card(CLUBS, CA)), "team winning fold, have color, don't play color, play trump");
+	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, CJ);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK),Card(HEARTS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(!game.isValidMove(3, Card(SPADES, CA)), "team winning fold, have color, don't play color, don't play trump");
+	
+	// The team is winning the fold, the player doesn't have the asked color
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, C10);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(game.isValidMove(3, Card(CLUBS, CA)), "team winning fold, don't have color, play trump");
+	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, C10);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(game.isValidMove(3, Card(DIAMOND, CA)), "team winning fold, don't have color, don't play trump");
+	
+	/// Under this line it's not done
+	/*
+	
+	s.turn[0] = Card(HEARTS, CQ);s.turn[1] = Card(HEARTS, CJ);s.turn[2] = Card(DIAMOND, C8);s.turn[3] = Card(INVALID_SUIT, INVALID_VALUE);
+        game.set(s, std::list<Card>{Card(DIAMOND, C8), Card(DIAMOND, C7)}, std::list<Card>{Card(CLUBS, C9), Card(SPADES, C10)},
+		 std::list<Card>{Card(HEARTS, CA), Card(SPADES, CQ)}, std::list<Card>{Card(CLUBS, CK), Card(DIAMOND, CK), Card(SPADES, CK)});
+        ret += assertion(game.isValidMove(3, Card(SPADES, CA)), "team winning fold");
+	*/
 	return ret;
 }
 

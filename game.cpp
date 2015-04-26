@@ -323,30 +323,35 @@ bool Game::isValidMove(int player, Card c)
 	if (player == state.first_to_play)
 		return true;
 	
-	// std::cout << "must play asked suit" << std::endl;
 	// Cannot play a card which is not the suit asked if the player has a card of the suit in his hand
-	if (c.suit != state.turn[state.first_to_play].suit && playerHasSuit(player, state.turn[state.first_to_play].suit))
+	if (c.suit != state.turn[state.first_to_play].suit && playerHasSuit(player, state.turn[state.first_to_play].suit)) {
+		//~ std::wcout << "must play asked suit" << std::endl;
 		return false;
+	}
 	
-	// std::cout << "better trump" << std::endl;
 	int fold_winner = state.playerWinningFold();
 	// If trump, and has a better trump value, need to use that trump
 	if (c.suit == state.turn[state.first_to_play].suit && c.suit == state.trump_suit)
 	{
-		if (c.getTrumpValue() < state.turn[fold_winner].getTrumpValue() && playerHasBetterCardInSuit(player, state.turn[state.first_to_play]))
+		if (c.getTrumpValue() < state.turn[fold_winner].getTrumpValue() && playerHasBetterCardInSuit(player, state.turn[fold_winner])) {
+			std::wcout << "have better trump" << std::endl;
 			return false;
+		}
 	}
 	
-	// std::cout << "must overtrump" << std::endl;
 	// If an opponent is winning the fold, the player have to trump, if a trump is played, it must be overtrumped
 	if (players[player]->isOpponent(fold_winner) && (!playerHasSuit(player, state.turn[fold_winner].suit) && c.suit != state.turn[fold_winner].suit))
 	{
 		if (playerHasSuit(player, state.trump_suit))
 		{
-			if (c.suit != state.trump_suit)
+			if (c.suit != state.trump_suit) {
+				//~ std::wcout << "must overtrump" << std::endl;
 				return false;
-			if (c.getTrumpValue() < state.turn[fold_winner].getTrumpValue() && playerHasBetterCardInSuit(player, state.turn[fold_winner]))
+			}
+			if (c.getTrumpValue() < state.turn[fold_winner].getTrumpValue() && playerHasBetterCardInSuit(player, state.turn[fold_winner])) {
+				//~ std::wcout << "must overtrump " << fold_winner << std::endl;
 				return false;
+			}
 		}
 	}
 	

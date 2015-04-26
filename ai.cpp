@@ -123,6 +123,12 @@ Card PLAYER_NAME::playCard()
 		if (i->suit == asked_suit)
 			return *i;
 	}
+	if (isOpponent(state.playerWinningFold())) {
+		for (auto i = hand.begin(); i != hand.end(); i++) {
+			if (i->suit == state.trump_suit)
+				return *i;
+		}
+	}
 	
 	return hand.front();
 }

@@ -1,10 +1,10 @@
 CFLAGS=-std=c++11 -Wall -Wextra -g
 PLAYER_NAME=b
 
-all: ia compil
+all: ai compil
 
-ia: card.oo state.oo
-	g++ $(CFLAGS) -DPLAYER_NAME=$(PLAYER_NAME) -fPIC -shared -o $(PLAYER_NAME).so ia.cpp $^
+ai: card.oo state.oo
+	g++ $(CFLAGS) -DPLAYER_NAME=$(PLAYER_NAME) -fPIC -shared -o $(PLAYER_NAME).so ai.cpp $^
 
 card.oo: card.cpp card.hpp
 	g++ $(CFLAGS) -c -fPIC -o card.oo card.cpp
@@ -37,4 +37,4 @@ test: card.o game.o state.o player.o test.o
 	g++ $(CFLAGS) $^ -ldl -o tests
 
 clean:
-	@rm *~ a.out *.o *.oo test
+	@rm *~ a.out *.o *.oo tests
