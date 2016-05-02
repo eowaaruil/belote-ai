@@ -4,7 +4,6 @@
 #include <ctime>
 #include <cstdlib>
 #include <dlfcn.h>
-#include <cwchar>
 #include <locale>
 
 Game::Game()
@@ -95,7 +94,7 @@ void Game::startGame()
 			printGameScore();
 			if (cheater != INVALID_PLAYER)
 			{
-				std::wcout << "The player " << cheater << " made his team loose by doing an invalid move." << std::endl;
+				std::cout << "The player " << cheater << " made his team loose by doing an invalid move." << std::endl;
 			}
 		}
 		
@@ -117,7 +116,7 @@ void Game::shuffle()
 bool Game::deal()
 {
 	int deck_top = NB_CARDS-1;
-	std::wcout << "New deal." << std::endl;
+	std::cout << "New deal." << std::endl;
 	
 	// First 3 cards
 	for (int i = 0; i < NB_PLAYERS; i++) {
@@ -146,7 +145,7 @@ bool Game::deal()
 	}
 	
 	if (state.leader == NOBODY)
-		std::wcout << "Nobody took the card during the first round." << std::endl;
+		std::cout << "Nobody took the card during the first round." << std::endl;
 	for (int i = 0; i < NB_PLAYERS && state.leader == NOBODY; i++)
 	{
 		if ((state.trump_suit = players[i]->secondBid(extra)) != INVALID_SUIT) {
@@ -157,12 +156,12 @@ bool Game::deal()
 	
 	if (state.leader == NOBODY)
 	{
-		std::wcout << "Nobody took the card during the second round." << std::endl;
+		std::cout << "Nobody took the card during the second round." << std::endl;
 		return false;
 	}
-	std::wcout << "Player " << state.leader << " takes the card: ";
-	printCard(std::wcout, extra);
-	std::wcout << " with " << suitToString(state.trump_suit) << "." << std::endl;
+	std::cout << "Player " << state.leader << " takes the card: ";
+	printCard(std::cout, extra);
+	std::cout << " with " << suitToString(state.trump_suit) << "." << std::endl;
 	
 	hands[state.leader].push_back(extra);
 	
@@ -271,12 +270,12 @@ Player* Game::loadPlayer(std::string name)
 
 void Game::printRoundScore()
 {
-	std::wcout << "Round score - Team1: " << state.round_score[TEAM1] << " - Team2: " << state.round_score[TEAM2] << std::endl;
+	std::cout << "Round score - Team1: " << state.round_score[TEAM1] << " - Team2: " << state.round_score[TEAM2] << std::endl;
 }
 
 void Game::printGameScore()
 {
-	std::wcout << "Game score - Team1: " << state.total_score[TEAM1] << " - Team2: " << state.total_score[TEAM2] << std::endl;
+	std::cout << "Game score - Team1: " << state.total_score[TEAM1] << " - Team2: " << state.total_score[TEAM2] << std::endl;
 }
 
 void Game::printBoard()
@@ -285,20 +284,20 @@ void Game::printBoard()
 	printRoundScore();
 	
 	// First line
-	std::wcout << "  ";
+	std::cout << "  ";
 	int i = 0;
 	int start = (NB_TURNS - hands[2].size()) / 2;
 	for (auto b = hands[2].begin(); b != hands[2].end(); i++)
 	{
 		if (start - i < 1)
 		{
-			printCard(std::wcout, *b);
+			printCard(std::cout, *b);
 			b++;
 		}
 		else
-			std::wcout << "  ";
+			std::cout << "  ";
 	}
-	std::wcout << std::endl;
+	std::cout << std::endl;
 	
 	// second to seventh lines
 	auto b = hands[1].begin();
@@ -309,61 +308,61 @@ void Game::printBoard()
 	{
 		if (b_start < 1 && b != hands[1].end())
 		{
-			printCard(std::wcout, *b);
+			printCard(std::cout, *b);
 			b++;
 		}
 		else
-			std::wcout << "  ";
+			std::cout << "  ";
 		b_start--;
 		
 		if (i == 1 && state.turn[2].suit != INVALID_SUIT && state.first_to_play == 2) { // player 2 first to play
-			std::wcout << "|     "; printCard(std::wcout, state.turn[2]); std::wcout << "       |";
+			std::cout << "|     "; printCard(std::cout, state.turn[2]); std::cout << "       |";
 		}
 		else if (i == 2 && state.turn[2].suit != INVALID_SUIT && state.first_to_play != 2) { // player 2 not first to play
-			std::wcout << "|     "; printCard(std::wcout, state.turn[2]); std::wcout << "       |";
+			std::cout << "|     "; printCard(std::cout, state.turn[2]); std::cout << "       |";
 		}
 		else if (i == 3 && state.turn[3].suit != INVALID_SUIT) { // player 3 first/not first to play card
-			std::wcout << "|         " << (state.first_to_play == 3?"  ":""); printCard(std::wcout, state.turn[3]); std::wcout << (state.first_to_play != 3?"  ":"") << " |";
+			std::cout << "|         " << (state.first_to_play == 3?"  ":""); printCard(std::cout, state.turn[3]); std::cout << (state.first_to_play != 3?"  ":"") << " |";
 		}
 		else if (i == 4 && state.turn[1].suit != INVALID_SUIT) { // player 1 first/not first to play card
-			std::wcout << "| " << (state.first_to_play != 1?"  ":""); printCard(std::wcout, state.turn[1]); std::wcout << (state.first_to_play == 1?"  ":"") << "         |";
+			std::cout << "| " << (state.first_to_play != 1?"  ":""); printCard(std::cout, state.turn[1]); std::cout << (state.first_to_play == 1?"  ":"") << "         |";
 		}
 		else if (i == 5 && state.turn[0].suit != INVALID_SUIT && state.first_to_play != 0) { // player 0 not first to play
-			std::wcout << "|       "; printCard(std::wcout, state.turn[0]); std::wcout << "     |";
+			std::cout << "|       "; printCard(std::cout, state.turn[0]); std::cout << "     |";
 		}
 		else if (i == 6 && state.turn[0].suit != INVALID_SUIT && state.first_to_play == 0) { // player 0 first to play
-			std::wcout << "|       "; printCard(std::wcout, state.turn[0]); std::wcout << "     |";
+			std::cout << "|       "; printCard(std::cout, state.turn[0]); std::cout << "     |";
 		}
 		else if (i == 0 || i == 7) // first and end line
-			std::wcout << "----------------";
+			std::cout << "----------------";
 		else // blank lines
-			std::wcout << "|              |";
+			std::cout << "|              |";
 		
 		if (c_start < 1 && c != hands[3].end())
 		{
-			printCard(std::wcout, *c);
+			printCard(std::cout, *c);
 			c++;
 		}
 		c_start--;
 		
-		std::wcout << std::endl;
+		std::cout << std::endl;
 	}
 	
 	// eighth line
-	std::wcout << "  ";
+	std::cout << "  ";
 	i = 0;
 	start = (NB_TURNS - hands[0].size() + 1) / 2;
 	for (auto b = hands[0].begin(); b != hands[0].end(); i++)
 	{
 		if (start - i < 1)
 		{
-			printCard(std::wcout, *b);
+			printCard(std::cout, *b);
 			b++;
 		}
 		else
-			std::wcout << "  ";
+			std::cout << "  ";
 	}
-	std::wcout << std::endl << std::endl;
+	std::cout << std::endl << std::endl;
 }
 
 void Game::clearTurn()
@@ -389,7 +388,7 @@ bool Game::isValidMove(int player, Card c)
 	if (c.suit == state.turn[state.first_to_play].suit && c.suit == state.trump_suit)
 	{
 		if (c.getTrumpValue() < state.turn[fold_winner].getTrumpValue() && playerHasBetterCardInSuit(player, state.turn[fold_winner])) {
-			std::wcout << "have better trump" << std::endl;
+			//std::cout << "have better trump" << std::endl;
 			return false;
 		}
 	}

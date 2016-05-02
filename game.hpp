@@ -18,11 +18,11 @@
 #define DEAL_THIRD_TURN		3
 
 // Cards unicode characters
-extern wchar_t card_back;
-extern wchar_t card_clubs[13];
-extern wchar_t card_hearths[13];
-extern wchar_t card_diamond[13];
-extern wchar_t card_spades[13];
+extern std::string card_back;
+extern std::string card_clubs[13];
+extern std::string card_hearths[13];
+extern std::string card_diamond[13];
+extern std::string card_spades[13];
 
 class Game
 {

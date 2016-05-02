@@ -1,28 +1,28 @@
 #include "card.hpp"
 
-std::wstring suitToString(int suit)
+std::string suitToString(int suit)
 {
 	if (suit == CLUBS)
-		return L"clubs";
+		return "clubs";
 	else if (suit == HEARTS)
-		return L"hearts";
+		return "hearts";
 	else if (suit == DIAMOND)
-		return L"diamond";
+		return "diamond";
 	else if (suit == SPADES)
-		return L"spades";
+		return "spades";
 	else
-		return L"invalid suit";
+		return "invalid suit";
 }
 
 ////////// to be deleted (or not)
 //////////
-wchar_t card_back = L'\U0001F0A0';
-wchar_t card_clubs[13] = {L'\U0001F0D7',L'\U0001F0D8', L'\U0001F0D9', L'\U0001F0DB', L'\U0001F0DD', L'\U0001F0DE', L'\U0001F0DA', L'\U0001F0D1'};
-wchar_t card_hearths[13] = {L'\U0001F0B7',L'\U0001F0B8', L'\U0001F0B9', L'\U0001F0BB', L'\U0001F0BD', L'\U0001F0BE', L'\U0001F0BA', L'\U0001F0B1'};
-wchar_t card_diamonds[13] = {L'\U0001F0C7',L'\U0001F0C8', L'\U0001F0C9', L'\U0001F0CB', L'\U0001F0CD', L'\U0001F0CE', L'\U0001F0CA', L'\U0001F0C1'};
-wchar_t card_spades[13] = {L'\U0001F0A7',L'\U0001F0A8', L'\U0001F0A9', L'\U0001F0AB', L'\U0001F0AD', L'\U0001F0AE', L'\U0001F0AA', L'\U0001F0A1'};
+std::string card_back = "\U0001F0A0";
+std::string card_clubs[13] = {"\U0001F0D7", "\U0001F0D8", "\U0001F0D9", "\U0001F0DB", "\U0001F0DD", "\U0001F0DE", "\U0001F0DA", "\U0001F0D1"};
+std::string card_hearths[13] = {"\U0001F0B7", "\U0001F0B8", "\U0001F0B9", "\U0001F0BB", "\U0001F0BD", "\U0001F0BE", "\U0001F0BA", "\U0001F0B1"};
+std::string card_diamonds[13] = {"\U0001F0C7", "\U0001F0C8", "\U0001F0C9", "\U0001F0CB", "\U0001F0CD", "\U0001F0CE", "\U0001F0CA", "\U0001F0C1"};
+std::string card_spades[13] = {"\U0001F0A7", "\U0001F0A8", "\U0001F0A9", "\U0001F0AB", "\U0001F0AD", "\U0001F0AE", "\U0001F0AA", "\U0001F0A1"};
 
-void printCard(std::wostream& s, Card c)
+void printCard(std::ostream& s, Card c)
 {
 	if (c.suit == CLUBS)
 		s << card_clubs[c.value] << ' ';

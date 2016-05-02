@@ -10,7 +10,7 @@ const int trump_score[] = {0, 0, 3, 4, 10, 11, 14, 20};
 enum {C7, C8, C9, CJ, CQ, CK, C10, CA, NB_VALUES};		// Normal suits
 const int suit_score[] = {0, 0, 0, 2, 3, 4, 10, 11};
 
-std::wstring suitToString(int suit);
+std::string suitToString(int suit);
 
 #define NB_CARDS		32
 
@@ -34,6 +34,6 @@ private:
 	
 };
 
-void printCard(std::wostream& s, Card c);
+void printCard(std::ostream& s, Card c);
 
 #endif

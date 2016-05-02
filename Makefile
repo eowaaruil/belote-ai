@@ -37,4 +37,4 @@ test: card.o game.o state.o player.o test.o
 	g++ $(CFLAGS) $^ -ldl -o tests
 
 clean:
-	@rm *~ a.out *.o *.oo tests
+	@rm -f *~ a.out *.o *.oo *.gch tests
